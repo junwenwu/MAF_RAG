@@ -52,6 +52,22 @@ class Document:
 # ---------------------------------------------------------------------------
 KNOWLEDGE_BASE: list[Document] = [
     Document(
+        id="doc-0",
+        title="About Contoso Outdoors",
+        content=(
+            "Contoso Outdoors is a leading outdoor recreation company founded in 2005. "
+            "We sell premium camping, hiking, and adventure gear including tents, backpacks, "
+            "clothing, and accessories. Our mission is to make the outdoors accessible to "
+            "everyone. We operate 45 retail stores across the United States and an online "
+            "store at contoso.com. Our product lines include TrailRunner tents, Alpine Explorer "
+            "backpacks, Summit Series climbing gear, and EcoTrail sustainable outdoor wear. "
+            "We offer a 60-day return policy, free shipping on orders over $50, and a lifetime "
+            "warranty on select products. Our customer support team is available 7 days a week."
+        ),
+        source="https://contoso.com/about",
+        tags=["company", "about", "contoso", "overview", "outdoors"],
+    ),
+    Document(
         id="doc-1",
         title="Contoso Outdoors Return Policy",
         content=(
@@ -156,7 +172,11 @@ class TextSearchContextProvider(BaseContextProvider):
         top_docs = [doc for _, doc in scored[: self._top_k]]
 
         if not top_docs:
-            return
+            # For broad queries with no keyword matches, return all docs
+            # so the agent has full context to work with
+            top_docs = self._documents[: self._top_k]
+            if not top_docs:
+                return
 
         # Build context messages
         context_messages = [
@@ -212,6 +232,7 @@ async def main() -> None:
     print("=" * 60)
 
     queries = [
+        "Can you tell me about Contoso Outdoors?",
         "What is the return policy?",
         "How long does standard shipping take?",
         "How should I care for the TrailRunner tent fabric?",

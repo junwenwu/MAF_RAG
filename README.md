@@ -178,8 +178,7 @@ MAF_RAG/
 ├── rag_custom_provider.py   # In-memory keyword search provider
 ├── rag_search_agent.py      # Azure AI Search provider (optional)
 ├── requirements.txt         # Python dependencies
-├── .env                     # Environment config (minimal for web mode)
-├── .env.example             # Full template with Azure AI Search vars
+├── .env.example             # Template for environment config
 └── README.md                # This file
 ```
 
