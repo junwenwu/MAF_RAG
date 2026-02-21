@@ -54,6 +54,17 @@ def fetch_page_text(url: str) -> tuple[str, str]:
     for tag in soup.find_all(["script", "style", "nav", "footer", "header", "aside"]):
         tag.decompose()
 
+    # Inline link URLs so they survive get_text().
+    # Turns <a href="https://x.com">click</a> → "click (https://x.com)"
+    for a_tag in soup.find_all("a", href=True):
+        href = a_tag["href"]
+        # Make relative URLs absolute
+        if href.startswith("/"):
+            href = f"https://learn.microsoft.com{href}"
+        link_text = a_tag.get_text(strip=True)
+        if link_text and href.startswith("http"):
+            a_tag.replace_with(f"{link_text} ({href})")
+
     # Try to grab the main content area
     main = soup.find("main") or soup.find("article") or soup.find("body")
 
@@ -154,14 +165,123 @@ def load_and_chunk_urls(
 
 
 # ---------------------------------------------------------------------------
-# Default URLs for the prototype
+# Default URLs – full Agent Framework documentation
 # ---------------------------------------------------------------------------
+_BASE = "https://learn.microsoft.com/en-us/agent-framework"
+_PIVOT = "?pivots=programming-language-python"
+
 DEFAULT_URLS = [
-    "https://learn.microsoft.com/en-us/agent-framework/overview/?pivots=programming-language-python",
-    "https://learn.microsoft.com/en-us/agent-framework/agents/tools/?pivots=programming-language-python",
-    "https://learn.microsoft.com/en-us/agent-framework/agents/tools/function-tools?pivots=programming-language-python",
-    "https://learn.microsoft.com/en-us/agent-framework/get-started/your-first-agent?pivots=programming-language-python",
-    "https://learn.microsoft.com/en-us/agent-framework/get-started/add-tools?pivots=programming-language-python",
+    # Landing page (has GitHub repo link, samples, etc.)
+    f"{_BASE}/",
+    # Overview
+    f"{_BASE}/overview/{_PIVOT}",
+    # Get Started
+    f"{_BASE}/get-started/{_PIVOT}",
+    f"{_BASE}/get-started/your-first-agent{_PIVOT}",
+    f"{_BASE}/get-started/add-tools{_PIVOT}",
+    f"{_BASE}/get-started/multi-turn{_PIVOT}",
+    f"{_BASE}/get-started/memory{_PIVOT}",
+    f"{_BASE}/get-started/workflows{_PIVOT}",
+    f"{_BASE}/get-started/hosting{_PIVOT}",
+    # Agents
+    f"{_BASE}/agents/{_PIVOT}",
+    f"{_BASE}/agents/running-agents{_PIVOT}",
+    f"{_BASE}/agents/multimodal{_PIVOT}",
+    f"{_BASE}/agents/structured-output{_PIVOT}",
+    f"{_BASE}/agents/background-responses{_PIVOT}",
+    f"{_BASE}/agents/rag{_PIVOT}",
+    f"{_BASE}/agents/declarative{_PIVOT}",
+    f"{_BASE}/agents/observability{_PIVOT}",
+    # Tools
+    f"{_BASE}/agents/tools/{_PIVOT}",
+    f"{_BASE}/agents/tools/function-tools{_PIVOT}",
+    f"{_BASE}/agents/tools/tool-approval{_PIVOT}",
+    f"{_BASE}/agents/tools/code-interpreter{_PIVOT}",
+    f"{_BASE}/agents/tools/file-search{_PIVOT}",
+    f"{_BASE}/agents/tools/web-search{_PIVOT}",
+    f"{_BASE}/agents/tools/hosted-mcp-tools{_PIVOT}",
+    f"{_BASE}/agents/tools/local-mcp-tools{_PIVOT}",
+    # Conversations & Memory
+    f"{_BASE}/agents/conversations/{_PIVOT}",
+    f"{_BASE}/agents/conversations/session{_PIVOT}",
+    f"{_BASE}/agents/conversations/context-providers{_PIVOT}",
+    f"{_BASE}/agents/conversations/storage{_PIVOT}",
+    # Middleware
+    f"{_BASE}/agents/middleware/{_PIVOT}",
+    f"{_BASE}/agents/middleware/defining-middleware{_PIVOT}",
+    f"{_BASE}/agents/middleware/chat-middleware{_PIVOT}",
+    f"{_BASE}/agents/middleware/agent-vs-run-scope{_PIVOT}",
+    f"{_BASE}/agents/middleware/termination{_PIVOT}",
+    f"{_BASE}/agents/middleware/result-overrides{_PIVOT}",
+    f"{_BASE}/agents/middleware/exception-handling{_PIVOT}",
+    f"{_BASE}/agents/middleware/shared-state{_PIVOT}",
+    f"{_BASE}/agents/middleware/runtime-context{_PIVOT}",
+    # Providers
+    f"{_BASE}/agents/providers/{_PIVOT}",
+    f"{_BASE}/agents/providers/azure-openai{_PIVOT}",
+    f"{_BASE}/agents/providers/openai{_PIVOT}",
+    f"{_BASE}/agents/providers/azure-ai-foundry{_PIVOT}",
+    f"{_BASE}/agents/providers/anthropic{_PIVOT}",
+    f"{_BASE}/agents/providers/ollama{_PIVOT}",
+    f"{_BASE}/agents/providers/github-copilot{_PIVOT}",
+    f"{_BASE}/agents/providers/copilot-studio{_PIVOT}",
+    f"{_BASE}/agents/providers/custom{_PIVOT}",
+    # Workflows
+    f"{_BASE}/workflows/{_PIVOT}",
+    f"{_BASE}/workflows/executors{_PIVOT}",
+    f"{_BASE}/workflows/edges{_PIVOT}",
+    f"{_BASE}/workflows/events{_PIVOT}",
+    f"{_BASE}/workflows/workflows{_PIVOT}",
+    f"{_BASE}/workflows/agents-in-workflows{_PIVOT}",
+    f"{_BASE}/workflows/human-in-the-loop{_PIVOT}",
+    f"{_BASE}/workflows/state{_PIVOT}",
+    f"{_BASE}/workflows/checkpoints{_PIVOT}",
+    f"{_BASE}/workflows/declarative{_PIVOT}",
+    f"{_BASE}/workflows/observability{_PIVOT}",
+    f"{_BASE}/workflows/as-agents{_PIVOT}",
+    f"{_BASE}/workflows/visualization{_PIVOT}",
+    # Orchestrations
+    f"{_BASE}/workflows/orchestrations/{_PIVOT}",
+    f"{_BASE}/workflows/orchestrations/sequential{_PIVOT}",
+    f"{_BASE}/workflows/orchestrations/concurrent{_PIVOT}",
+    f"{_BASE}/workflows/orchestrations/handoff{_PIVOT}",
+    f"{_BASE}/workflows/orchestrations/group-chat{_PIVOT}",
+    f"{_BASE}/workflows/orchestrations/magentic{_PIVOT}",
+    # Integrations
+    f"{_BASE}/integrations/{_PIVOT}",
+    f"{_BASE}/integrations/azure-functions{_PIVOT}",
+    f"{_BASE}/integrations/openai-endpoints{_PIVOT}",
+    f"{_BASE}/integrations/purview{_PIVOT}",
+    f"{_BASE}/integrations/m365{_PIVOT}",
+    f"{_BASE}/integrations/a2a{_PIVOT}",
+    f"{_BASE}/integrations/ag-ui/{_PIVOT}",
+    f"{_BASE}/integrations/ag-ui/getting-started{_PIVOT}",
+    f"{_BASE}/integrations/ag-ui/backend-tool-rendering{_PIVOT}",
+    f"{_BASE}/integrations/ag-ui/frontend-tools{_PIVOT}",
+    f"{_BASE}/integrations/ag-ui/security-considerations{_PIVOT}",
+    f"{_BASE}/integrations/ag-ui/human-in-the-loop{_PIVOT}",
+    f"{_BASE}/integrations/ag-ui/state-management{_PIVOT}",
+    f"{_BASE}/integrations/ag-ui/testing-with-dojo{_PIVOT}",
+    # DevUI
+    f"{_BASE}/devui/{_PIVOT}",
+    f"{_BASE}/devui/directory-discovery{_PIVOT}",
+    f"{_BASE}/devui/api-reference{_PIVOT}",
+    f"{_BASE}/devui/tracing{_PIVOT}",
+    f"{_BASE}/devui/security{_PIVOT}",
+    f"{_BASE}/devui/samples{_PIVOT}",
+    # Migration Guide
+    f"{_BASE}/migration-guide/{_PIVOT}",
+    f"{_BASE}/migration-guide/from-autogen/{_PIVOT}",
+    f"{_BASE}/migration-guide/from-semantic-kernel/{_PIVOT}",
+    f"{_BASE}/migration-guide/from-semantic-kernel/samples{_PIVOT}",
+    # Support
+    f"{_BASE}/support/{_PIVOT}",
+    f"{_BASE}/support/faq{_PIVOT}",
+    f"{_BASE}/support/troubleshooting{_PIVOT}",
+    f"{_BASE}/support/upgrade/{_PIVOT}",
+    f"{_BASE}/support/upgrade/requests-and-responses-upgrade-guide-python{_PIVOT}",
+    f"{_BASE}/support/upgrade/typed-options-guide-python{_PIVOT}",
+    f"{_BASE}/support/upgrade/python-2026-significant-changes{_PIVOT}",
 ]
 
 

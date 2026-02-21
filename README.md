@@ -2,8 +2,37 @@
 
 A Retrieval-Augmented Generation (RAG) prototype built with the
 [Microsoft Agent Framework](https://learn.microsoft.com/en-us/agent-framework/)
-that uses **web pages** (e.g. learn.microsoft.com) as the knowledge source — no
-Azure AI Search required.
+that uses the **full Agent Framework documentation** from
+[learn.microsoft.com](https://learn.microsoft.com/en-us/agent-framework/)
+as its knowledge source.
+
+## Data source
+
+The app scrapes **97 pages** from the official
+[Agent Framework documentation](https://learn.microsoft.com/en-us/agent-framework/),
+covering:
+
+| Section | Pages | Topics |
+|---|---|---|
+| Landing page | 1 | GitHub repo link, samples, navigation |
+| Overview | 1 | Introduction to Agent Framework |
+| Get Started | 7 | First agent, tools, multi-turn, memory, workflows, hosting |
+| Agents | 7 | Running agents, multimodal, structured output, RAG, declarative, observability |
+| Tools | 8 | Function tools, tool approval, code interpreter, file search, web search, MCP tools |
+| Conversations & Memory | 4 | Sessions, context providers, storage |
+| Middleware | 9 | Defining middleware, chat-level, termination, exception handling, shared state |
+| Providers | 9 | Azure OpenAI, OpenAI, Foundry, Anthropic, Ollama, GitHub Copilot, Copilot Studio |
+| Workflows | 13 | Executors, edges, events, state, checkpoints, orchestrations (sequential, concurrent, handoff, group chat, magentic) |
+| Integrations | 14 | Azure Functions, A2A, AG-UI protocol, Purview, M365 |
+| DevUI | 6 | Directory discovery, API reference, tracing, security, samples |
+| Migration Guide | 4 | From AutoGen, from Semantic Kernel |
+| Support | 7 | FAQ, troubleshooting, upgrade guides |
+
+All pages are fetched with the **Python pivot** (`?pivots=programming-language-python`).
+Link URLs are preserved in the scraped text so the agent can cite sources accurately.
+
+The full URL list is defined in `DEFAULT_URLS` in
+[web_loader.py](web_loader.py).
 
 ## Architecture
 
@@ -67,14 +96,30 @@ Web Pages (learn.microsoft.com, ...)
    pip install -r requirements.txt
    ```
 
-3. **Authenticate with Azure:**
+3. **Configure Azure OpenAI / Foundry credentials:**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Edit `.env` and set:
+
+   - `AZURE_OPENAI_ENDPOINT` — your Azure OpenAI or Cognitive Services endpoint
+   - `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` — your chat model deployment name
+
+   **Option A — Azure CLI (recommended for getting started):**
 
    ```bash
    az login
    ```
 
-   The agent uses `AzureCliCredential` to connect to your default Azure OpenAI
-   resource. No `.env` changes needed for the default web mode.
+   Uses `AzureCliCredential` — no API key needed. Requires the
+   **Cognitive Services OpenAI User** role on your Azure OpenAI resource.
+
+   **Option B — API key:**
+
+   Add `AZURE_OPENAI_API_KEY=<your-key>` to `.env`. Useful when you cannot
+   assign RBAC roles or need to run in environments without Azure CLI.
 
 ## Usage
 

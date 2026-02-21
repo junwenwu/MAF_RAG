@@ -187,10 +187,15 @@ async def main() -> None:
     """Run an interactive RAG agent backed by web-scraped ChromaDB docs."""
 
     api_key = os.environ.get("AZURE_OPENAI_API_KEY", "")
+    if api_key:
+        client = AzureOpenAIChatClient(api_key=api_key)
+    else:
+        from azure.identity import AzureCliCredential
+        client = AzureOpenAIChatClient(credential=AzureCliCredential())
 
     provider = ChromaWebContextProvider()
 
-    agent = AzureOpenAIChatClient(api_key=api_key).as_agent(
+    agent = client.as_agent(
         name="WebRAGAgent",
         instructions=(
             "You are a knowledgeable assistant for the Microsoft Agent Framework. "

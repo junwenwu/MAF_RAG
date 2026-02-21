@@ -35,7 +35,13 @@ async def run_web_mode() -> None:
     provider = ChromaWebContextProvider()
 
     api_key = os.environ.get("AZURE_OPENAI_API_KEY", "")
-    agent = AzureOpenAIChatClient(api_key=api_key).as_agent(
+    if api_key:
+        client = AzureOpenAIChatClient(api_key=api_key)
+    else:
+        from azure.identity import AzureCliCredential
+        client = AzureOpenAIChatClient(credential=AzureCliCredential())
+
+    agent = client.as_agent(
         name="WebRAGAgent",
         instructions=(
             "You are a knowledgeable assistant for the Microsoft Agent Framework. "
