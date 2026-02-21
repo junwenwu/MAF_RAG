@@ -1,0 +1,18 @@
+# Microsoft Agent Framework (preview)
+agent-framework --pre
+agent-framework-azure-ai --pre
+
+# Azure SDKs
+azure-identity
+
+# Local vector store
+chromadb
+
+# Web scraping & text processing
+requests
+beautifulsoup4
+lxml
+
+# Utilities
+python-dotenv
+pydantic
