@@ -8,11 +8,12 @@ A hands-on series exploring the [Microsoft Agent Framework](https://learn.micros
 |---|---|
 | [single_RAG_agent_no_tool/](single_RAG_agent_no_tool/) | Single agent with ChromaDB-backed RAG over the full Agent Framework docs (~97 pages) |
 | [single_RAG_agent_with_tool/](single_RAG_agent_with_tool/) | Same RAG agent plus function tools: concept comparison and GitHub sample search |
+| [multi_RAG_agents_handsoff_no_tool/](multi_RAG_agents_handsoff_no_tool/) | Multiple domain-specialist RAG agents with handoff orchestration (no function tools) |
+| [multi_RAG_agents_concurrent_no_tool/](multi_RAG_agents_concurrent_no_tool/) | Multiple domain-specialist RAG agents with concurrent fan-out/fan-in orchestration (no function tools) |
 
 ## Planned
 
-- **Adding function tools** — giving agents capabilities beyond Q&A
-- **Multi-agent for multiple RAGs** — coordinating specialized agents across different knowledge sources
+- **Multi-agent with function tools** — specialist agents enhanced with domain-specific tools
 - **Workflows and orchestrations** — multi-agent collaboration patterns
 - **Agent Identity** — configuring agent personas and behavioral boundaries
 - **Agent Blueprint** — declarative agent definitions for reproducible deployments
@@ -63,6 +64,20 @@ MAF_RAG/
     ├── agent_tools.py                    # compare_concepts + search_github_samples
     ├── web_loader.py                     # Web scraping + chunking
     ├── rag_web_agent.py                  # ChromaDB context provider
+    └── requirements.txt                  # Python dependencies
+├── multi_RAG_agents_handsoff_no_tool/
+│   ├── README.md                         # Project docs
+│   ├── main.py                           # HandoffBuilder workflow + interactive loop
+│   ├── domain_urls.py                    # URL lists split by domain
+│   ├── domain_providers.py               # ChromaWebContextProvider per domain
+│   ├── web_loader.py                     # Web scraping + chunking
+│   └── requirements.txt                  # Python dependencies
+└── multi_RAG_agents_concurrent_no_tool/
+    ├── README.md                         # Project docs
+    ├── main.py                           # ConcurrentBuilder workflow + LLM aggregator
+    ├── domain_urls.py                    # URL lists split by domain
+    ├── domain_providers.py               # ChromaWebContextProvider per domain
+    ├── web_loader.py                     # Web scraping + chunking
     └── requirements.txt                  # Python dependencies
 ```
 
