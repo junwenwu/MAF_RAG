@@ -1,4 +1,4 @@
-# Single RAG Agent with Multiple Tools
+# Single RAG Agent with Function Tool(s)
 
 Extends the [no-tool RAG agent](../single_RAG_agent_no_tool/) by adding
 **function tools** that the LLM can call during a conversation.
