@@ -17,7 +17,7 @@ A conversational agent that:
 3. Retrieves relevant passages at query time
 4. Generates grounded answers with source citations via Azure OpenAI
 
-No Azure AI Search required. No proprietary data. Just a local prototype that runs with a single `python main.py`.
+No Azure AI Search required. No proprietary data. Just a local prototype that runs with a single command.
 
 ## Architecture
 
@@ -221,7 +221,7 @@ All pages are fetched with the Python language pivot. On first run, ingestion ta
 git clone https://github.com/junwenwu/MAF_RAG.git
 cd MAF_RAG
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r single_RAG_agent_single_tool/requirements.txt
 
 # Option A: Azure CLI auth (recommended)
 az login
@@ -232,7 +232,7 @@ az login
 cp .env.example .env
 # Edit .env with your endpoint and deployment name
 
-python main.py
+python single_RAG_agent_single_tool/main.py
 ```
 
 ## What's next
@@ -240,9 +240,10 @@ python main.py
 This is the first installment in a series exploring Microsoft Agent Framework. In upcoming posts, I'll cover:
 
 - **Adding function tools** to give the agent capabilities beyond Q&A
-- **Multi-turn conversations** with session memory and persistence
+- **Multi-agent for multiple RAGs** — coordinating specialized agents across different knowledge sources
 - **Workflows and orchestrations** for multi-agent collaboration
-- **Deploying agents** to Azure with hosting and observability
+- **Agent Identity** — configuring agent personas and behavioral boundaries
+- **Agent Blueprint** — declarative agent definitions for reproducible deployments
 
 The full source code is on [GitHub](https://github.com/junwenwu/MAF_RAG). Questions or feedback? Open an issue or reach out.
 
