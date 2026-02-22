@@ -4,9 +4,9 @@ A hands-on series exploring the [Microsoft Agent Framework](https://learn.micros
 
 ## Projects
 
-| Folder | Description | Blog |
-|---|---|---|
-| [single_RAG_agent_single_tool/](single_RAG_agent_single_tool/) | Single agent with ChromaDB-backed RAG over the full Agent Framework docs (~97 pages) | [Part 1](single_RAG_agent_single_tool/blog-01-building-rag-with-maf.md) |
+| Folder | Description |
+|---|---|
+| [single_RAG_agent_single_tool/](single_RAG_agent_single_tool/) | Single agent with ChromaDB-backed RAG over the full Agent Framework docs (~97 pages) |
 
 ## Planned
 
