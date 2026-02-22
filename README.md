@@ -6,7 +6,8 @@ A hands-on series exploring the [Microsoft Agent Framework](https://learn.micros
 
 | Folder | Description |
 |---|---|
-| [single_RAG_agent_single_tool/](single_RAG_agent_single_tool/) | Single agent with ChromaDB-backed RAG over the full Agent Framework docs (~97 pages) |
+| [single_RAG_agent_no_tool/](single_RAG_agent_no_tool/) | Single agent with ChromaDB-backed RAG over the full Agent Framework docs (~97 pages) |
+| [single_RAG_agent_with_tool/](single_RAG_agent_with_tool/) | Same RAG agent plus function tools: concept comparison and GitHub sample search |
 
 ## Planned
 
@@ -22,7 +23,7 @@ A hands-on series exploring the [Microsoft Agent Framework](https://learn.micros
 git clone https://github.com/junwenwu/MAF_RAG.git
 cd MAF_RAG
 python -m venv .venv && source .venv/bin/activate
-pip install -r single_RAG_agent_single_tool/requirements.txt
+pip install -r single_RAG_agent_no_tool/requirements.txt
 
 cp .env.example .env
 # Edit .env with your Azure OpenAI endpoint and deployment name
@@ -32,7 +33,7 @@ az login
 
 # Option B: API key auth — set AZURE_OPENAI_API_KEY in .env
 
-python single_RAG_agent_single_tool/main.py
+python single_RAG_agent_no_tool/main.py
 ```
 
 ## Prerequisites
@@ -48,14 +49,20 @@ MAF_RAG/
 ├── .env.example                          # Environment variable template
 ├── .gitignore
 ├── README.md                             # ← you are here
-└── single_RAG_agent_single_tool/
-    ├── README.md                         # Detailed project docs
-    ├── blog-01-building-rag-with-maf.md  # Blog post (Part 1)
-    ├── main.py                           # CLI entry point (3 modes)
+├── single_RAG_agent_no_tool/
+│   ├── README.md                         # Detailed project docs
+│   ├── main.py                           # CLI entry point (3 modes)
+│   ├── web_loader.py                     # Web scraping + chunking
+│   ├── rag_web_agent.py                  # ChromaDB context provider
+│   ├── rag_custom_provider.py            # In-memory keyword search demo
+│   ├── rag_search_agent.py               # Azure AI Search version (optional)
+│   └── requirements.txt                  # Python dependencies
+└── single_RAG_agent_with_tool/
+    ├── README.md                         # Project docs
+    ├── main.py                           # CLI entry point with tools
+    ├── agent_tools.py                    # compare_concepts + search_github_samples
     ├── web_loader.py                     # Web scraping + chunking
     ├── rag_web_agent.py                  # ChromaDB context provider
-    ├── rag_custom_provider.py            # In-memory keyword search demo
-    ├── rag_search_agent.py               # Azure AI Search version (optional)
     └── requirements.txt                  # Python dependencies
 ```
 

@@ -6,9 +6,9 @@ Run this script to start an interactive loop where you can ask questions
 and the agent answers by retrieving context from web documentation via ChromaDB.
 
 Usage (from repo root):
-    python single_RAG_agent_single_tool/main.py
-    python single_RAG_agent_single_tool/main.py --mode custom
-    python single_RAG_agent_single_tool/main.py --mode search
+    python single_RAG_agent_no_tool/main.py
+    python single_RAG_agent_no_tool/main.py --mode custom
+    python single_RAG_agent_no_tool/main.py --mode search
 """
 
 from __future__ import annotations
