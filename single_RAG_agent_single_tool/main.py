@@ -5,10 +5,10 @@
 Run this script to start an interactive loop where you can ask questions
 and the agent answers by retrieving context from web documentation via ChromaDB.
 
-Usage:
-    python main.py                      # Web docs via ChromaDB (default)
-    python main.py --mode custom        # In-memory Contoso sample data
-    python main.py --mode search        # Azure AI Search (requires setup)
+Usage (from repo root):
+    python single_RAG_agent_single_tool/main.py
+    python single_RAG_agent_single_tool/main.py --mode custom
+    python single_RAG_agent_single_tool/main.py --mode search
 """
 
 from __future__ import annotations
@@ -17,6 +17,9 @@ import argparse
 import asyncio
 import os
 import sys
+
+# Ensure sibling modules are importable when run from the repo root
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from dotenv import load_dotenv
 
