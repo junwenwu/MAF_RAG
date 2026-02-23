@@ -56,13 +56,13 @@ User Question
 
 ```bash
 # From the repo root
-pip install -r multi_RAG_agents_handsoff_no_tool/requirements.txt
+pip install -r 03_multi_RAG_agents_handsoff_no_tool/requirements.txt
 
 # First run will scrape and index all 97 pages into 4 ChromaDB collections
-python multi_RAG_agents_handsoff_no_tool/main.py
+python 03_multi_RAG_agents_handsoff_no_tool/main.py
 
 # Force re-scrape
-python multi_RAG_agents_handsoff_no_tool/main.py --reingest
+python 03_multi_RAG_agents_handsoff_no_tool/main.py --reingest
 ```
 
 ## Example Session
@@ -105,6 +105,6 @@ Agent: [triage routes to general_specialist]
 
 This is project 3 in the learning series:
 
-1. **single_RAG_agent_no_tool** — Single agent, single ChromaDB collection, no tools
-2. **single_RAG_agent_with_tool** — Single agent + function tools
-3. **multi_RAG_agents_handsoff_no_tool** — Multiple specialist agents with handoff orchestration ← you are here
+1. **01_single_RAG_agent_no_tool** — Single agent, single ChromaDB collection, no tools
+2. **02_single_RAG_agent_with_tool** — Single agent + function tools
+3. **03_multi_RAG_agents_handsoff_no_tool** — Multiple specialist agents with handoff orchestration ← you are here

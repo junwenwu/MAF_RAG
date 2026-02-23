@@ -18,8 +18,8 @@ aggregator then uses the LLM to synthesise one consolidated answer from the
 relevant responses.
 
 Usage (from repo root):
-    python multi_RAG_agents_concurrent_no_tool/main.py
-    python multi_RAG_agents_concurrent_no_tool/main.py --reingest
+    python 04_multi_RAG_agents_concurrent_no_tool/main.py
+    python 04_multi_RAG_agents_concurrent_no_tool/main.py --reingest
 """
 
 from __future__ import annotations

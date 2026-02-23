@@ -63,13 +63,13 @@ User Question
 
 ```bash
 # From the repo root
-pip install -r multi_RAG_agents_concurrent_no_tool/requirements.txt
+pip install -r 04_multi_RAG_agents_concurrent_no_tool/requirements.txt
 
 # First run will scrape and index all 97 pages into 4 ChromaDB collections
-python multi_RAG_agents_concurrent_no_tool/main.py
+python 04_multi_RAG_agents_concurrent_no_tool/main.py
 
 # Force re-scrape
-python multi_RAG_agents_concurrent_no_tool/main.py --reingest
+python 04_multi_RAG_agents_concurrent_no_tool/main.py --reingest
 ```
 
 ## Example Session
@@ -106,7 +106,7 @@ Agent: [synthesised answer from workflows + general specialists]
 
 ## Series
 
-1. **single_RAG_agent_no_tool** — Single agent RAG over the full docs
-2. **single_RAG_agent_with_tool** — Same agent plus function tools
-3. **multi_RAG_agents_handsoff_no_tool** — Multiple specialists with handoff orchestration
-4. **multi_RAG_agents_concurrent_no_tool** — Multiple specialists with concurrent orchestration ← you are here
+1. **01_single_RAG_agent_no_tool** — Single agent RAG over the full docs
+2. **02_single_RAG_agent_with_tool** — Same agent plus function tools
+3. **03_multi_RAG_agents_handsoff_no_tool** — Multiple specialists with handoff orchestration
+4. **04_multi_RAG_agents_concurrent_no_tool** — Multiple specialists with concurrent orchestration ← you are here

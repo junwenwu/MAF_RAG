@@ -1,6 +1,6 @@
 # Single RAG Agent with Function Tool(s)
 
-Extends the [no-tool RAG agent](../single_RAG_agent_no_tool/) by adding
+Extends the [no-tool RAG agent](../01_single_RAG_agent_no_tool/) by adding
 **function tools** that the LLM can call during a conversation.
 
 ## Tools
@@ -45,7 +45,7 @@ User Question
 
 ## How it differs from the single-tool version
 
-| Aspect | single_RAG_agent_no_tool | single_RAG_agent_with_tool |
+| Aspect | 01_single_RAG_agent_no_tool | 02_single_RAG_agent_with_tool |
 |---|---|---|
 | Context injection | ChromaDB via `BaseContextProvider` | Same |
 | Function tools | None | `compare_concepts`, `search_github_samples` |
@@ -55,7 +55,7 @@ User Question
 
 ```bash
 # From the repo root
-python single_RAG_agent_with_tool/main.py
+python 02_single_RAG_agent_with_tool/main.py
 ```
 
 ### Example prompts

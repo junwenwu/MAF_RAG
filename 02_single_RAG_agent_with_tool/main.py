@@ -11,7 +11,7 @@ that the LLM can call directly:
 The agent automatically decides which tool to use based on the user's question.
 
 Usage (from repo root):
-    python single_RAG_agent_with_tool/main.py
+    python 02_single_RAG_agent_with_tool/main.py
 """
 
 from __future__ import annotations
