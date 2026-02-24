@@ -12,11 +12,11 @@ A hands-on series exploring the [Microsoft Agent Framework](https://learn.micros
 | [04_multi_RAG_agents_concurrent_no_tool/](04_multi_RAG_agents_concurrent_no_tool/) | Multiple domain-specialist RAG agents with concurrent fan-out/fan-in orchestration (no function tools) |
 | [05_multi_RAG_agents_handsoff_shared_tools/](05_multi_RAG_agents_handsoff_shared_tools/) | Handoff specialists with shared function tools (compare_concepts + search_github_samples) |
 | [06_multi_RAG_agents_handsoff_domain_tools/](06_multi_RAG_agents_handsoff_domain_tools/) | Handoff specialists with domain-specific tools (each agent gets its own tool set) |
+| [07_multi_RAG_agents_handsoff_agent_identity/](07_multi_RAG_agents_handsoff_agent_identity/) | Handoff specialists with structured agent identity (AgentIdentity dataclass + build_instructions) |
 
 ## Planned
 
 - **Workflows and orchestrations** — multi-agent collaboration patterns
-- **Agent Identity** — configuring agent personas and behavioral boundaries
 - **Agent Blueprint** — declarative agent definitions for reproducible deployments
 
 ## Quick start
@@ -87,10 +87,19 @@ MAF_RAG/
 │   ├── domain_urls.py                    # URL lists split by domain
 │   ├── domain_providers.py               # ChromaWebContextProvider per domain
 │   └── web_loader.py                     # Web scraping + chunking
-└── 06_multi_RAG_agents_handsoff_domain_tools/
+├── 06_multi_RAG_agents_handsoff_domain_tools/
+│   ├── README.md                         # Project docs
+│   ├── main.py                           # HandoffBuilder workflow + domain-specific tools
+│   ├── agent_tools.py                    # DOMAIN_TOOLS registry + 4 domain-specific tools
+│   ├── domain_urls.py                    # URL lists split by domain
+│   ├── domain_providers.py               # ChromaWebContextProvider per domain
+│   ├── web_loader.py                     # Web scraping + chunking
+│   └── requirements.txt                  # Python dependencies
+└── 07_multi_RAG_agents_handsoff_agent_identity/
     ├── README.md                         # Project docs
-    ├── main.py                           # HandoffBuilder workflow + domain-specific tools
-    ├── agent_tools.py                    # DOMAIN_TOOLS registry + 4 domain-specific tools
+    ├── main.py                           # HandoffBuilder workflow + identity-driven agents
+    ├── agent_identity.py                 # AgentIdentity dataclass + build_instructions()
+    ├── agent_tools.py                    # DOMAIN_TOOLS registry (same as 06)
     ├── domain_urls.py                    # URL lists split by domain
     ├── domain_providers.py               # ChromaWebContextProvider per domain
     ├── web_loader.py                     # Web scraping + chunking
