@@ -1,0 +1,26 @@
+# Microsoft Agent Framework (preview)
+agent-framework --pre
+agent-framework-azure-ai --pre
+
+# Orchestrations (handoff, sequential, concurrent, etc.)
+agent-framework-orchestrations --pre
+
+# Azure SDKs
+azure-identity
+
+# Foundry observability — Azure Monitor exporter for Application Insights
+azure-monitor-opentelemetry
+
+# Local vector store
+chromadb
+
+# Web scraping & text processing
+requests
+beautifulsoup4
+lxml
+
+# YAML parsing
+pyyaml
+
+# Environment variables
+python-dotenv
