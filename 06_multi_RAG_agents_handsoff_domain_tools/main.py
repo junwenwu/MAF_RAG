@@ -1,24 +1,28 @@
 # Copyright (c) Microsoft. All rights reserved.
 
-"""Multi-RAG agent with handoff orchestration and **shared** function tools.
+"""Multi-RAG agent with handoff orchestration and **domain-specific** function tools.
 
 Architecture:
     User → Triage Agent → Specialist Agent (agents | tools | workflows | general)
                          ├─ domain-specific RAG context (ChromaDB collection)
-                         └─ shared tools: compare_concepts, search_github_samples
+                         └─ domain-specific tools (tailored per specialist)
 
-Every specialist receives the SAME tool set.  The RAG context varies by domain
-(each specialist has its own ChromaDB collection), but the tools are uniform
-across all participants.
+Unlike Part 5 where every specialist received the SAME tool set, each
+specialist here gets tools **tailored to its domain**:
 
-Key difference from ``03_multi_RAG_agents_handsoff_no_tool``:
-    Each specialist agent is created with ``tools=[compare_concepts, search_github_samples]``
-    in addition to its domain-specific context provider.  The LLM decides
-    autonomously whether to call a tool or answer from RAG context alone.
+    agents     → list_supported_providers   (queries agents collection)
+    tools      → search_github_samples      (searches GitHub repo)
+    workflows  → compare_orchestrations     (queries workflows collection)
+    general    → compare_concepts           (queries all 4 collections)
+
+Key difference from ``05_multi_RAG_agents_handsoff_shared_tools``:
+    ``build_agents()`` reads from ``DOMAIN_TOOLS`` registry to give each
+    specialist a **different** tool set.  The specialist instructions are
+    dynamically generated based on the tools assigned to that domain.
 
 Usage (from repo root):
-    python 05_multi_RAG_agents_handsoff_shared_tools/main.py
-    python 05_multi_RAG_agents_handsoff_shared_tools/main.py --reingest
+    python 06_multi_RAG_agents_handsoff_domain_tools/main.py
+    python 06_multi_RAG_agents_handsoff_domain_tools/main.py --reingest
 """
 
 from __future__ import annotations
@@ -66,6 +70,55 @@ AGENT_DESCRIPTIONS = {
 
 
 # ---------------------------------------------------------------------------
+# Domain-specific tool-usage instructions
+# ---------------------------------------------------------------------------
+
+_TOOL_INSTRUCTIONS: dict[str, str] = {
+    "agents": (
+        "MANDATORY TOOL USAGE — you MUST follow these rules:\n"
+        "1. If the user asks about SUPPORTED PROVIDERS, which LLMS or MODELS "
+        "are available, or how to CONFIGURE a provider → you MUST call the "
+        "list_supported_providers tool.\n"
+        "2. For all other questions → answer from your documentation context "
+        "directly.\n\n"
+        "Violating rule 1 is a critical error. Always call the required tool "
+        "BEFORE composing your answer."
+    ),
+    "tools": (
+        "MANDATORY TOOL USAGE — you MUST follow these rules:\n"
+        "1. If the user asks for CODE EXAMPLES, CODE SAMPLES, or says "
+        "'show me code' → you MUST call the search_github_samples tool. "
+        "Do NOT fabricate or paraphrase code samples from context.\n"
+        "2. For all other questions → answer from your documentation context "
+        "directly.\n\n"
+        "Violating rule 1 is a critical error. Always call the required tool "
+        "BEFORE composing your answer."
+    ),
+    "workflows": (
+        "MANDATORY TOOL USAGE — you MUST follow these rules:\n"
+        "1. If the user asks to COMPARE, CONTRAST, or DIFFERENTIATE two "
+        "orchestration patterns or workflow concepts → you MUST call the "
+        "compare_orchestrations tool. Do NOT answer comparison questions "
+        "from context alone.\n"
+        "2. For all other questions → answer from your documentation context "
+        "directly.\n\n"
+        "Violating rule 1 is a critical error. Always call the required tool "
+        "BEFORE composing your answer."
+    ),
+    "general": (
+        "MANDATORY TOOL USAGE — you MUST follow these rules:\n"
+        "1. If the user asks to COMPARE, CONTRAST, or DIFFERENTIATE two "
+        "concepts → you MUST call the compare_concepts tool. Do NOT "
+        "answer comparison questions from context alone.\n"
+        "2. For all other questions → answer from your documentation context "
+        "directly.\n\n"
+        "Violating rule 1 is a critical error. Always call the required tool "
+        "BEFORE composing your answer."
+    ),
+}
+
+
+# ---------------------------------------------------------------------------
 # Build agents
 # ---------------------------------------------------------------------------
 def _get_client():
@@ -81,13 +134,13 @@ def _get_client():
         return AzureOpenAIChatClient(credential=AzureCliCredential())
 
 
-def build_agents(client, providers: dict, shared_tools: list):
+def build_agents(client, providers: dict, domain_tools: dict[str, list]):
     """Create the triage agent and domain-specialist agents.
 
     Args:
         client: The Azure OpenAI chat client.
         providers: Domain-specific ChromaDB context providers.
-        shared_tools: List of function tools given to EVERY specialist.
+        domain_tools: Mapping of domain name → list of tools for that domain.
 
     Returns:
         (triage, specialists_dict)  where specialists_dict maps domain name
@@ -115,12 +168,13 @@ def build_agents(client, providers: dict, shared_tools: list):
         description="Routes user questions to the appropriate domain specialist.",
     )
 
-    # Build tool-name list for the instructions
-    tool_names = ", ".join(t.name for t in shared_tools)
-
-    # Specialist agents — each with domain context provider + shared tools
+    # Specialist agents — each with domain context provider + domain-specific tools
     specialists = {}
     for domain_name, provider in providers.items():
+        tools_for_domain = domain_tools.get(domain_name, [])
+        tool_names = ", ".join(t.name for t in tools_for_domain) if tools_for_domain else "(none)"
+        tool_instructions = _TOOL_INSTRUCTIONS.get(domain_name, "")
+
         agent = client.as_agent(
             name=f"{domain_name}_specialist",
             instructions=(
@@ -131,21 +185,11 @@ def build_agents(client, providers: dict, shared_tools: list):
                 "If the context does not contain the answer, say so clearly. "
                 "After providing your answer, do NOT hand off to another agent.\n\n"
                 f"You have access to tools: {tool_names}.\n\n"
-                "MANDATORY TOOL USAGE — you MUST follow these rules:\n"
-                "1. If the user asks to COMPARE, CONTRAST, or DIFFERENTIATE two "
-                "concepts → you MUST call the compare_concepts tool. Do NOT "
-                "answer comparison questions from context alone.\n"
-                "2. If the user asks for CODE EXAMPLES, CODE SAMPLES, or says "
-                "'show me code' → you MUST call the search_github_samples tool. "
-                "Do NOT fabricate or paraphrase code samples from context.\n"
-                "3. For all other questions → answer from your documentation "
-                "context directly.\n\n"
-                "Violating rules 1 or 2 is a critical error. Always call the "
-                "required tool BEFORE composing your answer."
+                f"{tool_instructions}"
             ),
             description=AGENT_DESCRIPTIONS[domain_name],
             context_providers=[provider],
-            tools=shared_tools,
+            tools=tools_for_domain if tools_for_domain else None,
         )
         specialists[domain_name] = agent
 
@@ -156,7 +200,7 @@ def build_agents(client, providers: dict, shared_tools: list):
 # Interactive loop with HandoffBuilder
 # ---------------------------------------------------------------------------
 async def run(reingest: bool = False) -> None:
-    """Run the multi-RAG handoff workflow with shared tools."""
+    """Run the multi-RAG handoff workflow with domain-specific tools."""
     from agent_framework import (
         AgentResponse,
         AgentResponseUpdate,
@@ -166,7 +210,7 @@ async def run(reingest: bool = False) -> None:
     )
     from agent_framework.orchestrations import HandoffAgentUserRequest, HandoffBuilder
 
-    from agent_tools import compare_concepts, search_github_samples
+    from agent_tools import DOMAIN_TOOLS
     from domain_providers import build_domain_providers, reingest_all
 
     # Build (or rebuild) domain providers
@@ -181,28 +225,30 @@ async def run(reingest: bool = False) -> None:
     for domain_name, prov in providers.items():
         print(f"  {domain_name}: {prov._collection.count()} chunks")
 
-    # Shared tool set — every specialist gets these
-    shared_tools = [compare_concepts, search_github_samples]
+    # Show domain → tools mapping
+    print("\n🔧 Domain-specific tools:")
+    for domain_name, tools in DOMAIN_TOOLS.items():
+        tool_names = ", ".join(t.name for t in tools) if tools else "(none)"
+        print(f"  {domain_name}: {tool_names}")
 
     # Create client and agents
     client = _get_client()
-    triage, specialists = build_agents(client, providers, shared_tools)
+    triage, specialists = build_agents(client, providers, DOMAIN_TOOLS)
     all_agents = [triage] + list(specialists.values())
 
     def _build_workflow():
         """Build a fresh handoff workflow for each question."""
         return (
             HandoffBuilder(
-                name="multi_rag_handoff_shared_tools",
+                name="multi_rag_handoff_domain_tools",
                 participants=all_agents,
             )
             .with_start_agent(triage)
             .build()
         )
 
-    print(f"\n🔧 Shared tools: {', '.join(t.name for t in shared_tools)}")
     print("\n" + "=" * 60)
-    print("  Microsoft Agent Framework – Multi-RAG Handoff + Shared Tools")
+    print("  Microsoft Agent Framework – Multi-RAG Handoff + Domain Tools")
     print("  Specialists: " + ", ".join(specialists.keys()))
     print("=" * 60)
     print("Type your question and press Enter.  Type 'quit' or 'exit' to stop.\n")
@@ -298,7 +344,7 @@ async def run(reingest: bool = False) -> None:
 # ---------------------------------------------------------------------------
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Multi-RAG agent with handoff orchestration and shared function tools.",
+        description="Multi-RAG agent with handoff orchestration and domain-specific function tools.",
     )
     parser.add_argument(
         "--reingest",
